@@ -1,4 +1,6 @@
+var mbaasApi = require('fh-mbaas-api');
 var express = require('express');
+var mbaasExpress = mbaasApi.mbaasExpress();
 var cors = require('cors');
 var request = require('request');
 var bodyParser = require('body-parser');
@@ -16,13 +18,8 @@ app.use(cors());
 var jsonParser = bodyParser.json();
 
 // Note: the order which we add middleware to Express here is important!
-app.use('/sys', jsonParser, function(req, res) {
-	res.json({message: 'pong'});
-});
-
-app.use('/mbaas', jsonParser, function(req, res) {
-	res.json({message: 'no mbaas'});
-});
+app.use('/sys', mbaasExpress.sys(securableEndpoints));
+app.use('/mbaas', mbaasExpress.mbaas);
 
 // allow serving of static files from the public directory
 app.use(express.static(__dirname + '/public'));
@@ -97,6 +94,9 @@ function saveClaim(claim) {
 		claims.push(claim);
 	}
 }*/
+
+// Important that this is last!
+app.use(mbaasExpress.errorHandler());
 
 var port = process.env.FH_PORT || process.env.OPENSHIFT_NODEJS_PORT || 8001;
 var host = process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
