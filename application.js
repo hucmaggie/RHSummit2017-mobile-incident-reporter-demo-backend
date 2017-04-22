@@ -1,6 +1,4 @@
-var mbaasApi = require('fh-mbaas-api');
 var express = require('express');
-var mbaasExpress = mbaasApi.mbaasExpress();
 var cors = require('cors');
 var request = require('request');
 var bodyParser = require('body-parser');
@@ -18,261 +16,74 @@ app.use(cors());
 var jsonParser = bodyParser.json();
 
 // Note: the order which we add middleware to Express here is important!
-app.use('/sys', mbaasExpress.sys(securableEndpoints));
-app.use('/mbaas', mbaasExpress.mbaas);
+app.use('/sys', jsonParser, function(req, res) {
+	res.json({message: 'pong'});
+});
+
+app.use('/mbaas', jsonParser, function(req, res) {
+	res.json({message: 'no mbaas'});
+});
 
 // allow serving of static files from the public directory
 app.use(express.static(__dirname + '/public'));
-
-// Note: important that this is added just before your own Routes
-app.use(mbaasExpress.fhmiddleware());
 
 app.get('/v1/api/claims', jsonParser, function(req, res) {
 	res.json(claims);
 });
 
 app.post('/v1/api/claim', jsonParser, function(req, res) {
-	if (req.body) {
-		mbaasApi.db({
-			act : 'create',
-			type : 'activeClaim',
-			fields : req.body
-		}, function(error, data) {
-			if (error) {
-				res.status(500).json({
-					error : 'DB record creation error!'
-				});
-			} else {
-				res.json(data);
-			}
-		});
-	}
+	res.json({message: 'claim endpoint under construction'});
 });
 
 app.put('/v1/api/claim', jsonParser, function(req, res) {
-	if (req.body) {
-		mbaasApi.db({
-			act : 'update',
-			type : 'activeClaim',
-			guid : req.body.id,
-			fields : req.body
-		}, function(error, data) {
-			if (error) {
-				res.status(500).json({
-					error : 'DB record update error!'
-				});
-			} else {
-				res.json(data);
-			}
-		});
-	}
+	res.json({message: 'claim endpoint under construction'});
 });
 
 app.delete('/v1/api/claim', jsonParser, function(req, res) {
-	mbaasApi.db({
-		act : 'deleteall',
-		type : 'activeClaim'
-	}, function(error, data) {
-		if (error) {
-			res.status(500).json({
-				error : 'DB record deletion error!'
-			});
-		} else {
-			res.json(data);
-		}
-	});
+	res.json({message: 'claim endpoint under construction'});
 });
 
 app.get('/v1/api/claim', jsonParser, function(req, res) {
-	if (req.body) {
-		mbaasApi.db({
-			act : 'list',
-			type : 'activeClaim',
-			fields : req.body
-		}, function(error, data) {
-			if (error) {
-				res.status(500).json({
-					error : 'DB record retreival error!'
-				});
-			} else {
-				res.json(data);
-			}
-		});
-	}
+	res.json({message: 'claim endpoint under construction'});
 });
 
-var serviceId = 'edkitiecq635j5ioyisrb5dj'; // Manually loaded for now
-
 app.get('/test', jsonParser, function(req, res) {
-	mbaasApi.service({
-		guid : serviceId,
-		path : '/test',
-		method : 'GET'
-	}, function(error, body, response) {
-		if(error) {
-			res.json(error);
-		}
-		if(body) {
-			res.json(body);
-		}
-		res.json({message: 'Unexpected path'});
-	});
+	res.json({message: 'test endpoint under construction'});
 });
 
 app.get('/api/v1/bpms/', jsonParser, function(req, res) {
-	mbaasApi.service({
-		guid : serviceId,
-		path : '/api/v1/test',
-		method : 'GET'
-	}, function(error, body, response) {
-		if(error) {
-			res.json(error);
-		}
-		if(body) {
-			res.send(body);
-		}
-		res.json({message:'Backend: Unexpected path'});
-	});
+	res.json({message: 'bpms endpoint under construction'});
 });
 
 app.post('/api/v1/bpms/add-comments/:processInstanceId', jsonParser, function(req, res) {
-	mbaasApi.service({
-		guid : serviceId,
-		path : '/api/v1/bpms/add-comments/' + req.params.processInstanceId,
-		method : 'POST',
-		params : req.body
-	}, function(error, body, response) {
-		if(error) {
-			res.json(error);
-		}
-		if(body) {
-			res.json(body);
-		}
-		res.json({message: 'Unexpected path'});
-	});
+	res.json({message: 'add-comments endpoint under construction'});
 });
 
 app.post('/api/v1/bpms/doadjuster/:processInstanceId', jsonParser, function(req, res) {
-	mbaasApi.service({
-		guid : serviceId,
-		path : '/api/v1/bpms/doadjuster/' + req.params.processInstanceId,
-		method : 'POST',
-		params : req.body
-	}, function(error, body, response) {
-		if(error) {
-			res.json(error);
-		}
-		if(body) {
-			res.json(body);
-		}
-		res.json({message: 'Unexpected path'});
-	});
+	res.json({message: 'doadjuster endpoint under construction'});
 });
 
 app.get('/api/v1/bpms/download-photo/:processInstanceId/:fileName', jsonParser, function(req, res) {
-	mbaasApi.service({
-		guid : serviceId,
-		path : '/api/v1/bpms/download-photo/' + req.params.processInstanceId + '/' + req.params.fileName,
-		method : 'GET'
-	}, function(error, body, response) {
-		if(error) {
-			res.json(error);
-		}
-		if(body) {
-			res.json(body);
-		}
-		res.json({message: 'Unexpected path'});
-	});
+	res.json({message: 'download-photo endpoint under construction'});
 });
 
 app.post('/api/v1/bpms/customer-incident', jsonParser, function(req, res) {
-	mbaasApi.service({
-		guid : serviceId,
-		path : '/api/v1/bpms/customer-incident',
-		method : 'POST',
-		params : req.body
-	}, function(error, body, response) {
-		if(error) {
-			res.json(error);
-		}
-		if(body) {
-			res.json(body);
-		}
-		res.json({message: 'Backend: Unexpected path'});
-	});
+	res.json({message: 'customer-incident endpoint under construction'});
 });
 
 app.post('/api/v1/bpms/startprocess', jsonParser, function(req, res) {
-	mbaasApi.service({
-		guid : serviceId,
-		path : '/api/v1/bpms/startprocess',
-		method : 'POST',
-		params : req.body
-	}, function(error, body, response) {
-		if(error) {
-			res.json(error);
-		}
-		if(body) {
-			res.json(body);
-		}
-		res.json({message:'Backend: Unexpected path'});
-	});
+	res.json({message: 'startprocess endpoint under construction'});
 });
 
 app.post('/api/v1/bpms/update-questions', jsonParser, function(req, res) {
-	mbaasApi.service({
-		guid : serviceId,
-		path : '/api/v1/bpms/update-questions',
-		method : 'POST',
-		params : req.body
-	}, function(error, body, response) {
-		if(error) {
-			res.json(error);
-		}
-		if(body) {
-			res.json(body);
-		}
-		res.json({message: 'Unexpected path'});
-	});
+	res.json({message: 'update-questions endpoint under construction'});
 });
 
 app.post('/api/v1/bpms/upload-photo/:processInstanceId/:fileName', upload.single('file'), function(req, res) {
-	mbaasApi.service({
-		guid : serviceId,
-		path : '/api/v1/host',
-		method : 'GET',
-	}, function(error, body, response) {
-		if (error) {
-			res.json(error);
-		}
-		if (body) {
-			var cloudUrl = body.hostUrl + '/api/v1/bpms/upload-photo/' + req.params.processInstanceId + '/' + req.params.fileName;
-
-			var r = request.post(cloudUrl, function(err, httpResponse, body) {
-				if (err) {
-					res.json(err);
-				}
-				if (body) {
-					console.log(body);
-					res.send(body);
-				}
-				res.json({
-					message : 'Backend: Unexpected path'
-				});
-			});
-
-			var form = r.form();
-			form.append('file', fs.createReadStream(req.file.path), {
-				filename : req.file.originalname,
-				contentType : req.file.mimetype,
-				knownLength : req.file.size
-			});
-
-		}
+		res.json({message: 'upload-photo endpoint under construction'});
 	});
-});
 
-var claims = [];
+/*var claims = [];
 
 function saveClaim(claim) {
 	var found = false;
@@ -285,10 +96,7 @@ function saveClaim(claim) {
 	if (!found) {
 		claims.push(claim);
 	}
-}
-
-// Important that this is last!
-app.use(mbaasExpress.errorHandler());
+}*/
 
 var port = process.env.FH_PORT || process.env.OPENSHIFT_NODEJS_PORT || 8001;
 var host = process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
