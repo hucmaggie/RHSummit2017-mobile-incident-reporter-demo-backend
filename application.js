@@ -13,6 +13,8 @@ var app = express();
 // list the endpoints which you want to make securable here
 var securableEndpoints = [];
 
+console.log("Starting backend mobile app: ", process.argv[1]);
+
 // Enable CORS for all requests
 app.use(cors());
 var jsonParser = bodyParser.json();
@@ -24,25 +26,11 @@ app.use('/mbaas', mbaasExpress.mbaas);
 // allow serving of static files from the public directory
 app.use(express.static(__dirname + '/public'));
 
-app.get('/v1/api/claims', jsonParser, function(req, res) {
-	res.json(claims);
-});
+// Bootstrap routes
+require('./config/routes')(app, jsonParser);
 
-app.post('/v1/api/claim', jsonParser, function(req, res) {
-	res.json({message: 'claim endpoint under construction'});
-});
 
-app.put('/v1/api/claim', jsonParser, function(req, res) {
-	res.json({message: 'claim endpoint under construction'});
-});
 
-app.delete('/v1/api/claim', jsonParser, function(req, res) {
-	res.json({message: 'claim endpoint under construction'});
-});
-
-app.get('/v1/api/claim', jsonParser, function(req, res) {
-	res.json({message: 'claim endpoint under construction'});
-});
 
 app.get('/test', jsonParser, function(req, res) {
 	res.json({message: 'test endpoint under construction'});
@@ -98,7 +86,7 @@ function saveClaim(claim) {
 // Important that this is last!
 app.use(mbaasExpress.errorHandler());
 
-var port = process.env.FH_PORT || process.env.OPENSHIFT_NODEJS_PORT || 8001;
+var port = process.env.FH_PORT || process.env.OPENSHIFT_NODEJS_PORT || 7001;
 var host = process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
 app.listen(port, host, function() {
 	console.log("App started at: " + new Date() + " on port: " + port);
