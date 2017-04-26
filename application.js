@@ -27,7 +27,7 @@ app.use('/mbaas', mbaasExpress.mbaas);
 app.use(express.static(__dirname + '/public'));
 
 // Bootstrap routes
-require('./config/routes')(app, jsonParser);
+require('./config/routes')(app, jsonParser, upload);
 
 
 
@@ -52,21 +52,7 @@ app.get('/api/v1/bpms/download-photo/:processInstanceId/:fileName', jsonParser, 
 	res.json({message: 'download-photo endpoint under construction'});
 });
 
-app.post('/api/v1/bpms/customer-incident', jsonParser, function(req, res) {
-	res.json({message: 'customer-incident endpoint under construction'});
-});
 
-app.post('/api/v1/bpms/startprocess', jsonParser, function(req, res) {
-	res.json({message: 'startprocess endpoint under construction'});
-});
-
-app.post('/api/v1/bpms/update-questions', jsonParser, function(req, res) {
-	res.json({message: 'update-questions endpoint under construction'});
-});
-
-app.post('/api/v1/bpms/upload-photo/:processInstanceId/:fileName', upload.single('file'), function(req, res) {
-		res.json({message: 'upload-photo endpoint under construction'});
-	});
 
 /*var claims = [];
 
