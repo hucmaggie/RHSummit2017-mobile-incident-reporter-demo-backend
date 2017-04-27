@@ -4,13 +4,12 @@
 
 var request = require('request');
 var http = require('http');
+
+
 var DECISION_SERVER_HOST = 'decisions-incident-demo.apps.ocp.hucmaggie.com';
+var CONTAINER_ID = "4c1342a8827bf46033cb95f0bdf27f0b";
+var REQUEST_AUTHORIZATION = 'Basic ZGVjaWRlcjpkZWNpZGVyIzk5';
 
-
-exports.getAllQuestionnairesForIncident = function (req, res){
-
-    console.log("Inside getAllQuestionnairesForIncident");
-};
 
 exports.createIncident = function (req, res){
 
@@ -65,11 +64,11 @@ exports.createIncident = function (req, res){
 
 
     var options = {
-        url: 'http://' + DECISION_SERVER_HOST + '/kie-server/services/rest/server/containers/instances/4c1342a8827bf46033cb95f0bdf27f0b',
+        url: 'http://' + DECISION_SERVER_HOST + '/kie-server/services/rest/server/containers/instances/' + CONTAINER_ID,
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'Authorization': 'Basic ZGVjaWRlcjpkZWNpZGVyIzk5'
+            'Authorization': REQUEST_AUTHORIZATION
         },
         method: 'POST',
         json: msg
@@ -78,11 +77,17 @@ exports.createIncident = function (req, res){
     //send request
     request(options, function (error, response, body) {
 
-        console.log("BODY: ", body);
+        console.log("BODY: ", body, typeof body);
         if (!error && response.statusCode == 200) {
             //var data = JSON.parse(JSON.stringify(body));
             //console.log("DATA: ", data);
-            return res.json(body);
+
+            //var data = JSON.parse(body);
+
+            //console.log("data: ", data, typeof data);
+
+            var questionnaire = body.result["execution-results"].results[0].value["org.drools.core.runtime.rule.impl.FlatQueryResults"].idFactHandleMaps.element[0].element[0].value["org.drools.core.common.DisconnectedFactHandle"].object["com.redhat.vizuri.demo.domain.Questionnaire"];
+            return res.json(questionnaire);
         }
         else {
             console.log('Error happened: '+ error);
@@ -152,6 +157,180 @@ exports.createIncident = function (req, res){
 
 
 };
+
+exports.updateQuestions = function (req, res){
+
+    console.log("Inside updateQuestions");
+
+    var questionnaire = req.body;
+
+    console.log("questionnaire questions: ", questionnaire.questions);
+    console.log("questionnaire answers: ", questionnaire.answers);
+
+    var questionTemplate = {
+        "insert" : {
+            "object" : {"com.redhat.vizuri.demo.domain.Question":{
+                "questionId" : "win-1",
+                "questionnaireId" : 1,
+                "groupId" : null,
+                "description" : "Is the crack larger than a quarter?",
+                "answerType" : "YES_NO",
+                "required" : false,
+                "enabled" : true,
+                "order" : 1,
+                "options" : [ ]
+            }},
+            "disconnected" : false,
+            "out-identifier" : "question-1",
+            "return-object" : true,
+            "entry-point" : "DEFAULT"
+        }
+    };
+
+    var answerTemplate = {
+        "insert" : {
+            "object" : {"com.redhat.vizuri.demo.domain.Answer":{
+                "questionId" : "win-1",
+                "groupId" : null,
+                "strValue" : "Yes",
+                "updatedValue" : false,
+                "lastUpdated" : 1493093649773,
+                "delete" : false
+            }},
+            "disconnected" : false,
+            "out-identifier" : "answer",
+            "return-object" : true,
+            "entry-point" : "DEFAULT"
+        }
+    };
+
+    var ruleCommands = [{
+        "set-focus" : {
+            "name" : "sync-answers"
+        }
+    }, {
+        "fire-all-rules" : {
+            "max" : -1,
+            "out-identifier" : "sync-answers-fired"
+        }
+    } ];
+
+    var msg = {
+        "lookup" : "summit17-ks",
+        "commands" : []
+    };
+
+    var commands = [];
+    var question;
+    var answer;
+    // now create new instances of questions
+    questionnaire.questions.forEach(function(q){
+
+        question = JSON.parse(JSON.stringify(questionTemplate));
+        var obj = question.insert.object["com.redhat.vizuri.demo.domain.Question"];
+        obj.questionId = q.questionId;
+        obj.description = q.description;
+        obj.enabled = q.enabled;
+        obj.order = q.order;
+
+        commands.push(question);
+
+    });
+
+    questionnaire.answers.forEach(function(a){
+
+
+        answer = JSON.parse(JSON.stringify(answerTemplate));
+
+        var obj = answer.insert.object["com.redhat.vizuri.demo.domain.Answer"];
+        obj.questionId = a.questionId;
+        obj.strValue = a.strValue;
+
+        commands.push(answer);
+
+    });
+
+
+    commands.concat(ruleCommands);
+    msg.commands = commands;
+
+    console.log("msg: ", msg);
+
+    var options = {
+        url: 'http://' + DECISION_SERVER_HOST + '/kie-server/services/rest/server/containers/instances/' + CONTAINER_ID,
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': REQUEST_AUTHORIZATION
+        },
+        method: 'POST',
+        json: msg
+    };
+
+    //send request
+    request(options, function (error, response, body) {
+
+        console.log("BODY: ", body, typeof body);
+        console.log("response.statusCode: ", response.statusCode);
+
+        //type: 'SUCCESS'
+        if (!error && response.statusCode == 200) {
+            //var data = JSON.parse(JSON.stringify(body));
+            //console.log("DATA: ", data);
+
+            //var data = JSON.stringify(body);
+
+            var facts = body.result["execution-results"].results;
+
+            facts.forEach(function(fact){
+
+
+                if (fact.key === 'answer'){
+
+                    var obj = fact.value["com.redhat.vizuri.demo.domain.Answer"];
+
+                    console.log("update answer: ", obj);
+
+                    questionnaire.answers.forEach(function(a){
+
+                        if (obj.updatedValue === true && a.questionId === obj.questionId){
+
+                            console.log("update answer["+a.questionId+"]: ");
+                        }
+                    });
+                }
+                else if (fact.key.indexOf('question') > -1){
+
+                    var obj = fact.value["com.redhat.vizuri.demo.domain.Question"];
+
+                    console.log("check question: ", obj);
+
+                    questionnaire.questions.forEach(function(q){
+
+                        if (q.questionId === obj.questionId){
+
+                            console.log("update question["+q.questionId+"]: ");
+                            obj.enabled = q.enabled;
+
+                        }
+                    });
+
+                }
+
+            });
+
+            return res.json(questionnaire);
+        }
+        else {
+            console.error('Error happened: '+ error);
+            res.json(error);
+        }
+    });
+
+
+};
+
+
 
 
 

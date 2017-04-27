@@ -5,7 +5,7 @@ var cors = require('cors');
 var request = require('request');
 var bodyParser = require('body-parser');
 var multer  = require('multer');
-var upload = multer({ dest: 'uploads/' });
+var upload = multer({ dest: 'uploads/'});	// ,inMemory: true
 var fs = require('fs');
 
 var app = express();
@@ -40,17 +40,7 @@ app.get('/api/v1/bpms/', jsonParser, function(req, res) {
 	res.json({message: 'bpms endpoint under construction'});
 });
 
-app.post('/api/v1/bpms/add-comments/:processInstanceId', jsonParser, function(req, res) {
-	res.json({message: 'add-comments endpoint under construction'});
-});
 
-app.post('/api/v1/bpms/doadjuster/:processInstanceId', jsonParser, function(req, res) {
-	res.json({message: 'doadjuster endpoint under construction'});
-});
-
-app.get('/api/v1/bpms/download-photo/:processInstanceId/:fileName', jsonParser, function(req, res) {
-	res.json({message: 'download-photo endpoint under construction'});
-});
 
 
 
