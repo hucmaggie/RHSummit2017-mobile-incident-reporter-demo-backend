@@ -193,8 +193,8 @@ exports.updateQuestions = function (req, res){
                 "questionId" : "win-1",
                 "groupId" : null,
                 "strValue" : "Yes",
-                "updatedValue" : false,
-                "lastUpdated" : 1493093649773,
+               // "updatedValue" : false,
+               // "lastUpdated" : 1493093649773,
                 "delete" : false
             }},
             "disconnected" : false,
@@ -224,7 +224,7 @@ exports.updateQuestions = function (req, res){
     var question;
     var answer;
     // now create new instances of questions
-    questionnaire.questions.forEach(function(q){
+    questionnaire.questions.forEach(function(q, i){
 
         question = JSON.parse(JSON.stringify(questionTemplate));
         var obj = question.insert.object["com.redhat.vizuri.demo.domain.Question"];
@@ -233,19 +233,27 @@ exports.updateQuestions = function (req, res){
         obj.enabled = q.enabled;
         obj.order = q.order;
 
+        question.insert["out-identifier"] = "question-" + (i+1);
+
+        console.log("add question["+ obj.questionId+"], enabled["+obj.enabled+"]");  // compact log
+        //console.log("add question: " + JSON.stringify(question, null, 2) );
         commands.push(question);
 
     });
 
-    questionnaire.answers.forEach(function(a){
+    questionnaire.answers.forEach(function(a, i){
 
 
         answer = JSON.parse(JSON.stringify(answerTemplate));
+
+        answer.insert["out-identifier"] = "answer-" + (i+1);
 
         var obj = answer.insert.object["com.redhat.vizuri.demo.domain.Answer"];
         obj.questionId = a.questionId;
         obj.strValue = a.strValue;
 
+        console.log("add answer["+ obj.questionId+"], value["+obj.strValue+"]");  // compact log
+        //console.log("add answer: " + JSON.stringify(answer, null, 2));    // detail log
         commands.push(answer);
 
     });
@@ -271,6 +279,8 @@ exports.updateQuestions = function (req, res){
     request(options, function (error, response, body) {
 
         console.log("BODY: ", body, typeof body);
+
+
         console.log("response.statusCode: ", response.statusCode);
 
         //type: 'SUCCESS'
@@ -282,14 +292,17 @@ exports.updateQuestions = function (req, res){
 
             var facts = body.result["execution-results"].results;
 
+            //console.log("facts: " +  JSON.stringify(facts, null, 2));
+
             facts.forEach(function(fact){
 
 
-                if (fact.key === 'answer'){
+                if (fact.key.indexOf('answer') > -1){
 
                     var obj = fact.value["com.redhat.vizuri.demo.domain.Answer"];
 
-                    console.log("update answer: ", obj);
+                    //console.log("found answer: ", obj);
+                    console.log("found answer["+ obj.questionId+"], value["+obj.strValue+"]");  // compact log
 
                     questionnaire.answers.forEach(function(a){
 
@@ -303,14 +316,15 @@ exports.updateQuestions = function (req, res){
 
                     var obj = fact.value["com.redhat.vizuri.demo.domain.Question"];
 
-                    console.log("check question: ", obj);
+                    console.log("found question["+ obj.questionId+"], enabled["+obj.enabled+"]");  // compact log
+                    //console.log("check question: ", obj);
 
                     questionnaire.questions.forEach(function(q){
 
                         if (q.questionId === obj.questionId){
 
-                            console.log("update question["+q.questionId+"]: ");
-                            obj.enabled = q.enabled;
+                            console.log("update question["+q.questionId+"], enabled["+obj.enabled+"]");
+                            q.enabled = obj.enabled;
 
                         }
                     });

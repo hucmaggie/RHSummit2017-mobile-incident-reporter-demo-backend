@@ -280,7 +280,7 @@ exports.addPhoto = function (instanceId, fileName, source, cb){
 
         if (!error){
 
-            listReadyTasks (instanceId, function(error, taskId){
+            listReadyTasks (instanceId, "Update Information", function(error, taskId){
 
                 if (!error){
 
@@ -334,11 +334,11 @@ exports.addComment = function (req, res){
 
     console.log("for instanceId[" + instanceId + "], updateInfo: ", updateInfo);
 
-    signalHumanTask(instanceId, function(error){
+    signalHumanTask(instanceId, "Update%20Information", function(error){
 
         if (!error){
 
-            listReadyTasks (instanceId, function(error, taskId){
+            listReadyTasks (instanceId, "Update Information", function(error, taskId){
 
                 if (!error){
 
@@ -390,12 +390,69 @@ exports.addComment = function (req, res){
     // });
 };
 
-function signalHumanTask (instanceId, cb){
+//Perform Remediation
+exports.performRemediation = function (req, res){
 
-    console.log("Inside signalHumanTask, instanceId: " + instanceId);
+    console.log("Inside performRemediation");
+
+    var body = req.body;
+
+    //console.log("body: ", body);
+
+    var instanceId = req.params.instanceId;
+
+    var updateInfo = {"completed" : true};
+
+
+    console.log("for instanceId[" + instanceId + "], updateInfo: ", updateInfo);
+
+    signalHumanTask(instanceId, "Perform%20Remediation", function(error){
+
+        if (!error){
+
+            listReadyTasks (instanceId, "Perform Remediation", function(error, taskId){
+
+                if (!error){
+
+                    console.log("calling updateInformation");
+                    updateInformation (taskId, updateInfo, function(error){
+
+                        if (!error){
+                            console.log("Claim updated successful");
+                            res.json("SUCCESS");
+
+                        }
+                        else{
+                            var msg = "Unable to add comment, error: " + error;
+                            console.error(msg);
+                            res.json(msg);
+                        }
+                    });
+
+                }
+                else{
+                    var msg = "Unable to list ready tasks, error: " + error;
+                    console.error(msg);
+                    res.json();
+                }
+
+            });
+        }
+        else{
+            var msg = "Unable to signal for human task, error: " + error;
+            console.error(msg);
+            res.json("Unable to signal for human task, error: " + error);
+        }
+
+    });
+};
+
+function signalHumanTask (instanceId, type, cb){
+
+    console.log("Inside signalHumanTask, instanceId: " + instanceId + " type["+type+"]");
 
     var options = {
-        url: 'http://' + PROCESS_SERVER_HOST + '/kie-server/services/rest/server/containers/' + CONTAINER_ID + '/processes/instances/signal/Update%20Information?instanceId=' + instanceId,
+        url: 'http://' + PROCESS_SERVER_HOST + '/kie-server/services/rest/server/containers/' + CONTAINER_ID + '/processes/instances/signal/' + type + '?instanceId=' + instanceId,
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
@@ -426,9 +483,9 @@ function signalHumanTask (instanceId, cb){
 }
 
 //List Ready Tasks
-function listReadyTasks (instanceId, cb){
+function listReadyTasks (instanceId, type, cb){
 
-    console.log("Inside listReadyTasks for instanceId: ", instanceId);
+    console.log("Inside listReadyTasks for type["+type+"], instanceId: ", instanceId);
 
     var options = {
         url: 'http://' + PROCESS_SERVER_HOST + '/kie-server/services/rest/server/queries/tasks/instances/process/' + instanceId + '?status=Ready',
@@ -459,8 +516,8 @@ function listReadyTasks (instanceId, cb){
 
                     //task[i]["task-id"] === instanceId &&
 
-                    if (tasks[i]["task-name"] === "Update Information" && tasks[i]["task-status"] === "Ready"){
-                        console.log("found task: " + tasks[i]["task-id"]);
+                    if (tasks[i]["task-name"] === type && tasks[i]["task-status"] === "Ready"){
+                        console.log("found task: " + tasks[i]["task-id"] + " for type["+type+"]");
                         return cb(null, tasks[i]["task-id"]);
 
                     }
