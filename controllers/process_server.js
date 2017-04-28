@@ -400,11 +400,12 @@ exports.performRemediation = function (req, res){
     //console.log("body: ", body);
 
     var instanceId = req.params.instanceId;
+    var complete = req.params.complete;
 
-    var updateInfo = {"completed" : true};
+    var updateInfo = {"completed" : complete};
 
 
-    console.log("for instanceId[" + instanceId + "], updateInfo: ", updateInfo);
+    console.log("complete[" + complete + "] for instanceId[" + instanceId + "], updateInfo: ", updateInfo);
 
     signalHumanTask(instanceId, "Perform%20Remediation", function(error){
 
@@ -433,7 +434,7 @@ exports.performRemediation = function (req, res){
                 else{
                     var msg = "Unable to list ready tasks, error: " + error;
                     console.error(msg);
-                    res.json();
+                    res.json(msg);
                 }
 
             });
@@ -441,7 +442,7 @@ exports.performRemediation = function (req, res){
         else{
             var msg = "Unable to signal for human task, error: " + error;
             console.error(msg);
-            res.json("Unable to signal for human task, error: " + error);
+            res.json(msg);
         }
 
     });
@@ -522,6 +523,9 @@ function listReadyTasks (instanceId, type, cb){
 
                     }
                 }
+
+                // if no task was found just exit
+                return cb(new Error("unable to find task"));
 
             }
             else{

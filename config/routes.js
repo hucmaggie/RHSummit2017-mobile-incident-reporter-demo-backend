@@ -18,10 +18,12 @@ module.exports = function (app, jsonParser, upload) {
     app.post('/api/v1/bpms/add-comments/:instanceId', jsonParser, process_server.addComment);
 
 
-    app.post('/api/v1/bpms/doadjuster/:processInstanceId', jsonParser, function(req, res) {
-        console.log("doadjuster not implemented yet");
-        res.json({message: 'doadjuster endpoint under construction'});
-    });
+    app.post('/api/v1/bpms/doadjuster/:instanceId/:complete', jsonParser, process_server.performRemediation);
+
+    // app.post('/api/v1/bpms/doadjuster/:processInstanceId', jsonParser, function(req, res) {
+    //     console.log("doadjuster not implemented yet");
+    //     res.json({message: 'doadjuster endpoint under construction'});
+    // });
 
     app.get('/api/v1/bpms/download-photo/:instanceId/:fileName', jsonParser, function(req, res) {
         console.log("download-photo not implemented yet");
