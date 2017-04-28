@@ -210,7 +210,7 @@ exports.updateQuestions = function (req, res){
         }
     }, {
         "fire-all-rules" : {
-            "max" : -1,
+            "max" : 100,
             "out-identifier" : "sync-answers-fired"
         }
     } ];
@@ -259,10 +259,10 @@ exports.updateQuestions = function (req, res){
     });
 
 
-    commands.concat(ruleCommands);
-    msg.commands = commands;
+    msg.commands = commands.concat(ruleCommands);
 
-    console.log("msg: ", msg);
+    //console.log("msg: ", msg);
+    //console.log("msg: " +  JSON.stringify(msg, null, 2));
 
     var options = {
         url: 'http://' + DECISION_SERVER_HOST + '/kie-server/services/rest/server/containers/instances/' + CONTAINER_ID,
@@ -279,6 +279,8 @@ exports.updateQuestions = function (req, res){
     request(options, function (error, response, body) {
 
         console.log("BODY: ", body, typeof body);
+
+        //console.log("results: " +  JSON.stringify(body, null, 2));
 
 
         console.log("response.statusCode: ", response.statusCode);
@@ -297,11 +299,11 @@ exports.updateQuestions = function (req, res){
             facts.forEach(function(fact){
 
 
-                if (fact.key.indexOf('answer') > -1){
+                if (fact.key.startsWith("answer") === true){
 
                     var obj = fact.value["com.redhat.vizuri.demo.domain.Answer"];
 
-                    //console.log("found answer: ", obj);
+                    //console.log("found answer: ", fact.value);
                     console.log("found answer["+ obj.questionId+"], value["+obj.strValue+"]");  // compact log
 
                     questionnaire.answers.forEach(function(a){
@@ -312,7 +314,7 @@ exports.updateQuestions = function (req, res){
                         }
                     });
                 }
-                else if (fact.key.indexOf('question') > -1){
+                else if (fact.key.startsWith('question') === true){
 
                     var obj = fact.value["com.redhat.vizuri.demo.domain.Question"];
 
@@ -329,6 +331,9 @@ exports.updateQuestions = function (req, res){
                         }
                     });
 
+                }
+                else if (fact.key.startsWith('sync-answers') === true){
+                    console.log("rules fired " + fact.value + " times");
                 }
 
             });
