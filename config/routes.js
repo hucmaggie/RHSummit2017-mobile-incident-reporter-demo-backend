@@ -13,21 +13,44 @@ module.exports = function (app, jsonParser, upload) {
 
     // PROCESS SERVER ROUTES
 
-    // get list of existing claims
-    app.get('/v1/api/claim', jsonParser, process_server.getExistingClaims);
-
     app.post('/api/v1/bpms/startprocess', process_server.startProcess);
 
     app.post('/api/v1/bpms/add-comments/:instanceId', jsonParser, process_server.addComment);
 
 
-
     app.post('/api/v1/bpms/doadjuster/:processInstanceId', jsonParser, function(req, res) {
+        console.log("doadjuster not implemented yet");
         res.json({message: 'doadjuster endpoint under construction'});
     });
 
     app.get('/api/v1/bpms/download-photo/:instanceId/:fileName', jsonParser, function(req, res) {
+        console.log("download-photo not implemented yet");
         res.json({message: 'download-photo endpoint under construction'});
+    });
+
+    // get list of existing claims
+    app.get('/v1/api/claims', jsonParser, process_server.getExistingClaims);
+
+
+    // load
+    app.get('/v1/api/claim', jsonParser, function(req, res) {
+        console.log("load claim not implemented yet");
+        res.json({message: 'claim endpoint under construction'});
+    });
+
+    // create
+    app.post('/v1/api/claim', jsonParser, claim_services.createClaim);
+
+    // update
+    app.put('/v1/api/claim', jsonParser, function(req, res) {
+        console.log("update claim not implemented yet");
+        res.json({message: 'claim endpoint under construction'});
+    });
+
+    // delete
+    app.delete('/v1/api/claim', jsonParser, function(req, res) {
+        console.log("delete claim not implemented yet");
+        res.json({message: 'claim endpoint under construction'});
     });
 
 
@@ -53,30 +76,6 @@ module.exports = function (app, jsonParser, upload) {
     // CLAIM SERVICES  ROUTES
 
     app.post('/api/v1/bpms/upload-photo/:instanceId/:fileName', upload.single('file'), claim_services.addPhoto);
-
-
-
-
-
-
-
-    app.get('/v1/api/claims', jsonParser, function(req, res) {
-        res.json(claims);
-    });
-
-    // create
-    app.post('/v1/api/claim', jsonParser, claim_services.createClaim);
-
-    // update
-    app.put('/v1/api/claim', jsonParser, function(req, res) {
-        res.json({message: 'claim endpoint under construction'});
-    });
-
-    // delete
-    app.delete('/v1/api/claim', jsonParser, function(req, res) {
-        res.json({message: 'claim endpoint under construction'});
-    });
-
 
 
 };

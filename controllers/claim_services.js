@@ -112,6 +112,6 @@ exports.addPhoto = function (req, res){
 
 exports.createClaim = function (req, res) {
 
-    console.log("Inside createClaim");
+    console.log("Inside createClaim, not implemented yet");
 };
 
