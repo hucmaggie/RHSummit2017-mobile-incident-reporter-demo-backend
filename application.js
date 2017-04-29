@@ -29,9 +29,6 @@ app.use(express.static(__dirname + '/public'));
 // Bootstrap routes
 require('./config/routes')(app, jsonParser, upload);
 
-
-
-
 app.get('/test', jsonParser, function(req, res) {
 	res.json({message: 'test endpoint under construction'});
 });
@@ -39,25 +36,6 @@ app.get('/test', jsonParser, function(req, res) {
 app.get('/api/v1/bpms/', jsonParser, function(req, res) {
 	res.json({message: 'bpms endpoint under construction'});
 });
-
-
-
-
-
-/*var claims = [];
-
-function saveClaim(claim) {
-	var found = false;
-	for (var i = 0; i < claims.length; i++) {
-		if (claims[i].id === claim.id) {
-			found = true;
-			break;
-		}
-	}
-	if (!found) {
-		claims.push(claim);
-	}
-}*/
 
 // Important that this is last!
 app.use(mbaasExpress.errorHandler());

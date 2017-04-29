@@ -55,8 +55,6 @@ module.exports = function (app, jsonParser, upload) {
         res.json({message: 'claim endpoint under construction'});
     });
 
-
-
     // DECISION SERVER ROUTES
 
     app.post('/api/v1/bpms/customer-incident', decision_server.createIncident);
@@ -64,20 +62,8 @@ module.exports = function (app, jsonParser, upload) {
     // need the jsonParser to parse the incomming data into a json object
     app.post('/api/v1/bpms/update-questions', jsonParser, decision_server.updateQuestions);
 
-
-
-
-
-
-
-
-
-
-
-
     // CLAIM SERVICES  ROUTES
 
     app.post('/api/v1/bpms/upload-photo/:instanceId/:fileName', upload.single('file'), claim_services.addPhoto);
-
 
 };
