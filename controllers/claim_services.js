@@ -50,7 +50,6 @@ exports.addPhoto = function (req, res){
             console.log("DATA: ", data);
 
             process_server.addPhoto(instanceId, fileName, "reporter", function(){
-
                 console.log("Done adding photo: " + fileName);
                 return res.json({link: "http://services-incident-demo.apps.ocp.hucmaggie.com/photos/" + instanceId + "/" + fileName});
             });

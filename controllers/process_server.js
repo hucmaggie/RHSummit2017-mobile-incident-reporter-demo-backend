@@ -276,7 +276,7 @@ exports.addPhoto = function (instanceId, fileName, source, cb){
 
     console.log("for instanceId[" + instanceId + "], updateInfo: ", updateInfo);
 
-    signalHumanTask(instanceId, function(error){
+    signalHumanTask(instanceId, "Update%20Information", function(error){
 
         if (!error){
 
