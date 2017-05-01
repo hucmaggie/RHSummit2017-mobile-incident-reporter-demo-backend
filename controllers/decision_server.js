@@ -15,20 +15,23 @@ exports.createIncident = function (req, res){
 
     console.log("Inside createIncident");
 
+    console.log("Incident: " + JSON.stringify(req.body,2,null));
+
+    var incidentData = req.body;
+
     var msg = {
         "lookup" : "summit17-ks",
         "commands" : [ {
             "insert" : {
                 "object" : {"com.redhat.vizuri.demo.domain.Incident":{
-                    "id" : null,
-                    "reporterUserId" : null,
-                    "incidentType" : "windshield",
-                    "description" : null,
-                    "incidentDate" : null,
-                    "buildingName" : null,
-                    "stateCode" : null,
-                    "zipCode" : null,
-                    "severity" : null
+                    "id" : incidentData.id,
+                    "reporterUserId" : incidentData.reporterUserId,
+                    "incidentType" : incidentData.type,
+                    "description" : incidentData.description,
+                    "incidentDate" : incidentData.incidentDate,
+                    "buildingName" : incidentData.buildingName,
+                    "stateCode" : incidentData.stateCode,
+                    "zipCode" : incidentData.postalCode
                 }},
                 "disconnected" : true,
                 "out-identifier" : "incident",
@@ -62,6 +65,7 @@ exports.createIncident = function (req, res){
         } ]
     };
 
+    console.log("Message: ", JSON.stringify(msg,2,null));
 
     var options = {
         url: 'http://' + DECISION_SERVER_HOST + '/kie-server/services/rest/server/containers/instances/' + CONTAINER_ID,
@@ -77,15 +81,8 @@ exports.createIncident = function (req, res){
     //send request
     request(options, function (error, response, body) {
 
-        console.log("BODY: ", body, typeof body);
+        console.log("BODY: ", JSON.stringify(body,2,null), typeof body);
         if (!error && response.statusCode == 200) {
-            //var data = JSON.parse(JSON.stringify(body));
-            //console.log("DATA: ", data);
-
-            //var data = JSON.parse(body);
-
-            //console.log("data: ", data, typeof data);
-
             var questionnaire = body.result["execution-results"].results[0].value["org.drools.core.runtime.rule.impl.FlatQueryResults"].idFactHandleMaps.element[0].element[0].value["org.drools.core.common.DisconnectedFactHandle"].object["com.redhat.vizuri.demo.domain.Questionnaire"];
             return res.json(questionnaire);
         }
@@ -93,68 +90,6 @@ exports.createIncident = function (req, res){
             console.log('Error happened: '+ error);
         }
     });
-
-
-
-
-
-
-    // var options = {
-    //     host: DECISION_SERVER_HOST,
-    //     path: '/kie-server/services/rest/server/containers/instances/4c1342a8827bf46033cb95f0bdf27f0b',
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //         'Accept': 'application/json',
-    //         'Authorization': 'Basic ZGVjaWRlcjpkZWNpZGVyIzk5'
-    //         //,'Content-Length': postData.length
-    //     },
-    //     port: 80,
-    //     method: 'POST'
-    // };
-
-    // var postData = JSON.stringify(body);
-    //
-    //
-    //
-    // //  http://services-incident-demo.apps.ocp.hucmaggie.com/
-    // const request = http.request(options, function(response) {
-    //
-    //     console.log("STATUS: ",response.statusCode);
-    //
-    //     console.log("HEADERS: ", JSON.stringify(response.headers));
-    //
-    //
-    //
-    //     var data;
-    //
-    //     response.setEncoding('utf8');
-    //
-    //     response.on('data', function(chunk) {
-    //         data =+ chunk;
-    //         console.log("BODY: ", chunk);
-    //     });
-    //
-    //     response.on('end', function() {
-    //         console.log('No more data in response.');
-    //
-    //         console.log("got data: ", data);
-    //
-    //         return res.json(data);
-    //     });
-    // });
-    //
-    // request.on('error', function(err) {
-    //     console.error("problem with request: ${e.message}");
-    //
-    //     console.error("got an error: ", error);
-    //
-    //     return res.status(500).json({error : 'DB record retreival error!'});
-    // });
-    //
-    // // write data to request body
-    // request.write(postData);
-    // request.end();
-
 
 };
 
@@ -348,9 +283,3 @@ exports.updateQuestions = function (req, res){
 
 
 };
-
-
-
-
-
-

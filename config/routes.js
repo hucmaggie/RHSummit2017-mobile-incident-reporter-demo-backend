@@ -57,7 +57,7 @@ module.exports = function (app, jsonParser, upload) {
 
     // DECISION SERVER ROUTES
 
-    app.post('/api/v1/bpms/customer-incident', decision_server.createIncident);
+    app.post('/api/v1/bpms/customer-incident', jsonParser, decision_server.createIncident);
 
     // need the jsonParser to parse the incomming data into a json object
     app.post('/api/v1/bpms/update-questions', jsonParser, decision_server.updateQuestions);
