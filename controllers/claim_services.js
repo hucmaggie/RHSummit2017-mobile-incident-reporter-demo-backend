@@ -17,8 +17,9 @@ exports.addPhoto = function (req, res){
     console.log("originalname: " + fileName);
 
     var instanceId = req.params.instanceId;
+    var updateSource = req.params.messageSource;
 
-    console.log("instanceId : " + instanceId);
+    console.log("instanceId : " + instanceId + ", updateSource: " + updateSource);
 
     console.log("fileName passes by client: " + req.params.fileName);
 
@@ -49,7 +50,7 @@ exports.addPhoto = function (req, res){
             var data = JSON.parse(body);
             console.log("DATA: ", data);
 
-            process_server.addPhoto(instanceId, fileName, "reporter", function(){
+            process_server.addPhoto(instanceId, fileName, updateSource, function(){
                 console.log("Done adding photo: " + fileName);
                 return res.json({link: "http://services-incident-demo.apps.ocp.hucmaggie.com/photos/" + instanceId + "/" + fileName});
             });

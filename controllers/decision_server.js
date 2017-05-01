@@ -65,7 +65,7 @@ exports.createIncident = function (req, res){
         } ]
     };
 
-    console.log("Message: ", JSON.stringify(msg,2,null));
+    console.log("Message: " + JSON.stringify(msg,2,null));
 
     var options = {
         url: 'http://' + DECISION_SERVER_HOST + '/kie-server/services/rest/server/containers/instances/' + CONTAINER_ID,

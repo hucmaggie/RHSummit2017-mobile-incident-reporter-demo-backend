@@ -13,7 +13,7 @@ module.exports = function (app, jsonParser, upload) {
 
     // PROCESS SERVER ROUTES
 
-    app.post('/api/v1/bpms/startprocess', process_server.startProcess);
+    app.post('/api/v1/bpms/startprocess', jsonParser, process_server.startProcess);
 
     app.post('/api/v1/bpms/add-comments/:instanceId', jsonParser, process_server.addComment);
 
@@ -64,6 +64,6 @@ module.exports = function (app, jsonParser, upload) {
 
     // CLAIM SERVICES  ROUTES
 
-    app.post('/api/v1/bpms/upload-photo/:instanceId/:fileName', upload.single('file'), claim_services.addPhoto);
+    app.post('/api/v1/bpms/upload-photo/:instanceId/:fileName/:messageSource', upload.single('file'), claim_services.addPhoto);
 
 };

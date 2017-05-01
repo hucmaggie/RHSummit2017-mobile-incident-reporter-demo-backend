@@ -153,74 +153,162 @@ exports.startProcess = function (req, res){
 
     console.log("Inside startProcess");
 
+    var claim = req.body.claim;
+    var incident = claim.incident;
+
+    console.log("claim: ", claim);  // + JSON.stringify(claim, 2, null));
+
+    var incident = {"com.redhat.vizuri.demo.domain.Incident":{
+                            "id" : incident.id,
+                            "reporterUserId" : incident.reporterUserId,
+                            "incidentType" : incident.type,
+                            "description" : incident.description,
+                            "incidentDate" : incident.incidentDate,
+                            "buildingName" : incident.buildingName,
+                            "stateCode" : incident.stateCode,
+                            "zipCode" : incident.postalCode,
+                            "severity" : incident.severity
+                        }
+                   };
+
+
+
+    var questionnaire = {"com.redhat.vizuri.demo.domain.Questionnaire": {
+                                "id": 1,
+                                "name": claim.questionnaire.name,
+                                "questions": [],
+                                "answers": [],
+                                "completedBy": null,
+                                "completedDate": null
+                            }
+                        };
+
+    var questionTemplate = {"questionId": "win-1",
+                            "questionnaireId": 1,
+                            "groupId": null,
+                            "description": "Is the crack larger than a quarter?",
+                            "answerType": "YES_NO",
+                            "required": false,
+                            "enabled": true,
+                            "order": 1,
+                            "options": []
+                        };
+
+    var answerTemplate =  {"questionId" : "win-1",
+                           "groupId" : null,
+                           "strValue" : "No"
+                          };
+
+    var question;
+    var answer;
+    // now create new instances of questions
+    claim.questionnaire.questions.forEach(function(q, i){
+
+        question = JSON.parse(JSON.stringify(questionTemplate));
+
+        question.questionId = q.questionId;
+        question.description = q.description;
+        question.enabled = q.enabled;
+        question.order = q.order;
+
+        console.log("add question["+ question.questionId+"], enabled["+question.enabled+"]");  // compact log
+        //console.log("add question: " + JSON.stringify(question, null, 2) );
+        questionnaire["com.redhat.vizuri.demo.domain.Questionnaire"].questions.push(question);
+
+    });
+
+    claim.questionnaire.answers.forEach(function(a, i){
+
+
+        answer = JSON.parse(JSON.stringify(answerTemplate));
+
+        answer.questionId = a.questionId;
+        answer.strValue = a.strValue;
+
+        console.log("add answer["+ answer.questionId+"], value["+answer.strValue+"]");  // compact log
+        //console.log("add answer: " + JSON.stringify(answer, null, 2));    // detail log
+        questionnaire["com.redhat.vizuri.demo.domain.Questionnaire"].answers.push(answer);
+
+    });
+
     var msg = {
-        "incident" : {"com.redhat.vizuri.demo.domain.Incident":{
-            "id" : null,
-            "reporterUserId" : null,
-            "incidentType" : "windshield",
-            "description" : "Programatically creating incident",
-            "incidentDate" : null,
-            "buildingName" : "building-a",
-            "stateCode" : "VA",
-            "zipCode" : null,
-            "severity" : null
-        }
-        },
-        "questionnaire": {
-            "com.redhat.vizuri.demo.domain.Questionnaire": {
-                "id": 1,
-                "name": "Cracked Windshield Report",
-                "questions": [{
-                    "questionId": "win-1",
-                    "questionnaireId": 1,
-                    "groupId": null,
-                    "description": "Is the crack larger than a quarter?",
-                    "answerType": "YES_NO",
-                    "required": false,
-                    "enabled": true,
-                    "order": 1,
-                    "options": []
-                },
-                    {
-                        "questionId": "win-2",
-                        "questionnaireId": 1,
-                        "groupId": null,
-                        "description": "Is the crack larger than a dollar bill?",
-                        "answerType": "YES_NO",
-                        "required": false,
-                        "enabled": false,
-                        "order": 2,
-                        "options": []
-                    },
-                    {
-                        "questionId": "win-3",
-                        "questionnaireId": 1,
-                        "groupId": null,
-                        "description": "Was the car in motion at the time?",
-                        "answerType": "YES_NO",
-                        "required": false,
-                        "enabled": true,
-                        "order": 3,
-                        "options": []
-                    },
-                    {
-                        "questionId": "win-4",
-                        "questionnaireId": 1,
-                        "groupId": null,
-                        "description": "Does the damage impair the drivers vision?",
-                        "answerType": "YES_NO",
-                        "required": false,
-                        "enabled": true,
-                        "order": 4,
-                        "options": []
-                    }
-                ],
-                "answers": [],
-                "completedBy": null,
-                "completedDate": null
-            }
-        }
+        "incident" : incident,
+        "questionnaire": questionnaire
     };
+
+
+    //console.log("msg: ", msg);
+    console.log("msg: " +  JSON.stringify(msg, null, 2));
+
+
+    // var msg2 = {
+    //     "incident" : {"com.redhat.vizuri.demo.domain.Incident":{
+    //         "id" : null,
+    //         "reporterUserId" : null,
+    //         "incidentType" : "windshield",
+    //         "description" : "Programatically creating incident",
+    //         "incidentDate" : null,
+    //         "buildingName" : "building-a",
+    //         "stateCode" : "VA",
+    //         "zipCode" : null,
+    //         "severity" : null
+    //     }
+    //     },
+    //     "questionnaire": {
+    //         "com.redhat.vizuri.demo.domain.Questionnaire": {
+    //             "id": 1,
+    //             "name": "Cracked Windshield Report",
+    //             "questions": [{
+    //                 "questionId": "win-1",
+    //                 "questionnaireId": 1,
+    //                 "groupId": null,
+    //                 "description": "Is the crack larger than a quarter?",
+    //                 "answerType": "YES_NO",
+    //                 "required": false,
+    //                 "enabled": true,
+    //                 "order": 1,
+    //                 "options": []
+    //             },
+    //                 {
+    //                     "questionId": "win-2",
+    //                     "questionnaireId": 1,
+    //                     "groupId": null,
+    //                     "description": "Is the crack larger than a dollar bill?",
+    //                     "answerType": "YES_NO",
+    //                     "required": false,
+    //                     "enabled": false,
+    //                     "order": 2,
+    //                     "options": []
+    //                 },
+    //                 {
+    //                     "questionId": "win-3",
+    //                     "questionnaireId": 1,
+    //                     "groupId": null,
+    //                     "description": "Was the car in motion at the time?",
+    //                     "answerType": "YES_NO",
+    //                     "required": false,
+    //                     "enabled": true,
+    //                     "order": 3,
+    //                     "options": []
+    //                 },
+    //                 {
+    //                     "questionId": "win-4",
+    //                     "questionnaireId": 1,
+    //                     "groupId": null,
+    //                     "description": "Does the damage impair the drivers vision?",
+    //                     "answerType": "YES_NO",
+    //                     "required": false,
+    //                     "enabled": true,
+    //                     "order": 4,
+    //                     "options": []
+    //                 }
+    //             ],
+    //             "answers": [],
+    //             "completedBy": null,
+    //             "completedDate": null
+    //         }
+    //     }
+    // };
 
 
     var options = {
