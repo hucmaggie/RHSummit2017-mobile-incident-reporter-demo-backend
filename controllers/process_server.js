@@ -23,8 +23,7 @@ exports.getExistingClaims = function (req, res){
 
         //send request
         request(options, function (error, response, body) {
-
-            console.log("BODY: ", body);
+            //console.log("BODY: ", body);
             if (!error && response.statusCode == 200) {
                 //var data = JSON.parse(JSON.stringify(body));
 
@@ -42,7 +41,7 @@ exports.getExistingClaims = function (req, res){
 
                         loadClaimDetails(process, function(claim) {
 
-                            console.log("found claim: ", claim);
+                            //console.log("found claim: ", claim);
                             claimCount++;
 
                             if (claim != null || claim != undefined){
@@ -129,7 +128,7 @@ function loadClaimDetails(process, cb) {
     //send request
     request(options, function (error, response, body) {
 
-        console.log("BODY: ", body);
+        //console.log("BODY: ", body);
         //console.log("response: ", response);
 
         if (!error && response.statusCode == 200) {
@@ -324,8 +323,7 @@ exports.startProcess = function (req, res){
 
     //send request
     request(options, function (error, response, body) {
-
-        console.log("BODY: ", body);
+        //console.log("BODY: ", body);
         console.log("response.statusCode: ", response.statusCode);
         if (!error && response.statusCode == 201) {
             //var data = JSON.parse(JSON.stringify(body));
@@ -552,8 +550,7 @@ function signalHumanTask (instanceId, type, cb){
 
     //send request
     request(options, function (error, response, body) {
-
-        console.log("BODY: ", body);
+        //console.log("BODY: ", body);
         console.log("response.statusCode: ", response.statusCode);
         if (!error && response.statusCode == 200) {
             //var data = JSON.parse(JSON.stringify(body));
@@ -587,8 +584,7 @@ function listReadyTasks (instanceId, type, cb){
 
     //send request
     request(options, function (error, response, body) {
-
-        console.log("BODY: ", body, typeof body);
+      //console.log("BODY: ", body, typeof body);
         //console.log("response: ", response);
 
         if (!error && response.statusCode == 200) {
@@ -655,8 +651,7 @@ function updateInformation (taskId, updateInfo, cb){
 
     //send request
     request(options, function (error, response, body) {
-
-        console.log("BODY: ", body, typeof body);
+        //console.log("BODY: ", body, typeof body);
         console.log("response.statusCode: ", response.statusCode);
         if (!error && response.statusCode == 201) {
             //var data = JSON.parse(JSON.stringify(body));

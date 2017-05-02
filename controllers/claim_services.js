@@ -35,7 +35,7 @@ exports.addPhoto = function (req, res){
     //var filePost = request.post('http://' + SERVICES_SERVER_HOST + '/photos/' + instanceId,
     var filePost = request(options, function (error, response, body) {
 
-        console.log("BODY: ", body, typeof body);
+        //console.log("BODY: ", body, typeof body);
         console.log("response.statusCode: ", response.statusCode);
 
         if (!error && response.statusCode == 200) {

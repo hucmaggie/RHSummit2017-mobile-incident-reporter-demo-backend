@@ -81,7 +81,7 @@ exports.createIncident = function (req, res){
     //send request
     request(options, function (error, response, body) {
 
-        console.log("BODY: ", JSON.stringify(body,2,null), typeof body);
+        //console.log("BODY: ", JSON.stringify(body,2,null), typeof body);
         if (!error && response.statusCode == 200) {
             var questionnaire = body.result["execution-results"].results[0].value["org.drools.core.runtime.rule.impl.FlatQueryResults"].idFactHandleMaps.element[0].element[0].value["org.drools.core.common.DisconnectedFactHandle"].object["com.redhat.vizuri.demo.domain.Questionnaire"];
             return res.json(questionnaire);
@@ -213,8 +213,7 @@ exports.updateQuestions = function (req, res){
     //send request
     request(options, function (error, response, body) {
 
-        console.log("BODY: ", body, typeof body);
-
+        //console.log("BODY: ", body, typeof body);
         //console.log("results: " +  JSON.stringify(body, null, 2));
 
 
