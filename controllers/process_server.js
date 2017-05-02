@@ -165,7 +165,7 @@ exports.startProcess = function (req, res){
                             "incidentDate" : incident.incidentDate,
                             "buildingName" : incident.buildingName,
                             "stateCode" : incident.stateCode,
-                            "zipCode" : incident.postalCode,
+                            "zipCode" : incident.zipCode,
                             "severity" : incident.severity
                         }
                    };
