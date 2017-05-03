@@ -128,7 +128,7 @@ function loadClaimDetails(process, cb) {
     //send request
     request(options, function (error, response, body) {
 
-        //console.log("BODY: ", body);
+        console.log("Process claims body: ", body);
         //console.log("response: ", response);
 
         if (!error && response.statusCode == 200) {
@@ -327,7 +327,7 @@ exports.startProcess = function (req, res){
         console.log("response.statusCode: ", response.statusCode);
         if (!error && response.statusCode == 201) {
             //var data = JSON.parse(JSON.stringify(body));
-            //console.log("DATA: ", data);
+            //console.log("StartDATA: ", data);
             return res.json(body);
         }
         else {
